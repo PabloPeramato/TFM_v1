@@ -3,7 +3,7 @@ from app.api.routers import sessions, availability, user, power
 from app.core.config import settings
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.openapi.docs import get_swagger_ui_html
-
+from fastapi.middleware.cors import CORSMiddleware
 security = HTTPBasic()
 
 USERNAME = settings.USERNAME_SWAGGER
@@ -25,6 +25,16 @@ app = FastAPI(
     docs_url=None,
     redoc_url=None
 )
+
+# Middleware CORS 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.include_router(
     sessions.router,
     prefix="/sessions",
