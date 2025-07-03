@@ -1,5 +1,8 @@
 from pydantic import BaseModel
 from typing import List
+from sqlalchemy import Column, Integer, String
+from app.core.database import Base
+from app.core.config import settings
 
 
 class StatusOK(BaseModel):
@@ -46,3 +49,22 @@ class PowerStatus(BaseModel):
 class ListSerials(BaseModel):
     serial: str
     os: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class UserStored(BaseModel):
+    username: str
+    hashed_password: str
+
+
+class User(Base):
+    __tablename__ = settings.TABLE_NAME
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True, nullable=False)
+    username = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)

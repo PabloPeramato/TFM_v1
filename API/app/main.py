@@ -1,13 +1,17 @@
 from fastapi import FastAPI, HTTPException, Depends
-from app.api.routers import sessions, availability, user, power
+from app.api.routers import sessions, availability, user, power, account
 from app.core.config import settings
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.openapi.docs import get_swagger_ui_html
-
+from fastapi.middleware.cors import CORSMiddleware
+from app.core.database import Base, engine
 security = HTTPBasic()
 
 USERNAME = settings.USERNAME_SWAGGER
 PASSWORD = settings.PASSWORD_SWAGGER
+ORIGINS = settings.ORIGINS
+
+Base.metadata.create_all(bind=engine)
 
 
 def authenticate(credentials: HTTPBasicCredentials = Depends(security)):
@@ -24,6 +28,21 @@ app = FastAPI(
     version="1.0.0",
     docs_url=None,
     redoc_url=None
+)
+
+# Middleware CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(
+    account.router,
+    prefix="/account",
+    tags=["account"]
 )
 app.include_router(
     sessions.router,
