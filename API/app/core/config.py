@@ -29,5 +29,11 @@ class Settings:
     MQTT_TOPIC_RPI3_8BA1 = os.getenv("MQTT_TOPIC_RPI3_8BA1")
     MQTT_TOPIC_RPI4_1718 = os.getenv("MQTT_TOPIC_RPI4_1718")
 
+    ORIGINS = os.getenv("ORIGINS").split(',')
+    FAKE_USERS_DB = os.getenv("FAKE_USERS_DB").split(',')
+    ALGORITHM = os.getenv("ALGORITHM")
+    DATABASE_URL = os.getenv("DATABASE_URL")
+    TABLE_NAME = os.getenv("TABLE_NAME")
+
 
 settings = Settings()
