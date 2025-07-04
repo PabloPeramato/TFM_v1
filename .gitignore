@@ -1,7 +1,47 @@
-# Ignorar __pycache__ en todos los niveles
+# Variables de entorno con credenciales
+.env
+
+# Entorno virtual Python
+venv/
+.venv/
+
+# ===== BACKEND =====
+
+# Cache de Python
 __pycache__/
+*.py[cod]
 *.pyc
 
-# Ignorar archivos .env en cualquier carpeta
-.env
-*.env
+# Base de datos local
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+
+# ===== FRONTEND =====
+
+# Node.js
+node_modules/
+
+# Build del frontend
+dist/
+build/
+
+# ===== SISTEMAS OPERATIVOS =====
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# macOS  
+.DS_Store
+
+# ===== IDEs COMUNES =====
+
+# Visual Studio Code
+.vscode/
+
+# PyCharm / IntelliJ
+.idea/
