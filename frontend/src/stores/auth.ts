@@ -2,7 +2,8 @@ import { defineStore } from 'pinia';
 import { router } from '@/router';
 import { fetchWrapper } from '@/utils/helpers/fetch-wrapper';
 
-const baseUrl = `${import.meta.env.VITE_API_URL}/users`;
+const apiUrl = import.meta.env.VITE_API_URL || '';
+const baseUrl = `${apiUrl}/account`;
 
 export const useAuthStore = defineStore({
   id: 'auth',
@@ -14,15 +15,28 @@ export const useAuthStore = defineStore({
     returnUrl: null
   }),
   actions: {
-    async login(username: string, password: string) {
-      const user = await fetchWrapper.post(`${baseUrl}/authenticate`, { username, password });
+    async login(loginField: string, password: string) {
+      const url = `${baseUrl}/login`;
+      const params = new URLSearchParams({
+        login_field: loginField,
+        password
+      }).toString();
+      const response = await fetchWrapper.post(`${url}?${params}`);
 
-      // update pinia state
-      this.user = user;
-      // store user details and jwt in local storage to keep user logged in between page refreshes
-      localStorage.setItem('user', JSON.stringify(user));
-      // redirect to previous url or default to home page
+      // update pinia state with received token
+      this.user = { token: response.access_token };
+      localStorage.setItem('user', JSON.stringify(this.user));
       router.push(this.returnUrl || '/dashboard/default');
+    },
+    async register(mail: string, username: string, password: string, confirmPassword: string) {
+      const url = `${baseUrl}/register`;
+      const params = new URLSearchParams({
+        mail,
+        username,
+        password,
+        confirm_password: confirmPassword
+      }).toString();
+      await fetchWrapper.post(`${url}?${params}`);
     },
     logout() {
       this.user = null;

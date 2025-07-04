@@ -14,8 +14,7 @@ interface temp {
 }
 
 interface UserData {
-  username: string;
-  password: string;
+  [key: string]: unknown;
 }
 
 function request(method: string) {

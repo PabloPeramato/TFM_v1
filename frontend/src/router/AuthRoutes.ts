@@ -6,7 +6,7 @@ const AuthRoutes = {
     {
       name: 'Login',
       path: '/auth/login',
-      component: () => import('@/views/authentication/auth/LoginPage.vue')
+      component: () => import('@/views/authentication/auth/LoginRegister.vue')
     },
     {
       name: 'Error 404',
