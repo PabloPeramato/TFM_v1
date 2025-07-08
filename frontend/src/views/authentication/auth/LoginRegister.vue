@@ -3,19 +3,29 @@
     <div class="form-container sign-up-container">
       <form @submit.prevent="onRegister">
         <h1>Crear cuenta</h1>
+        <div v-if="registerError" class="error-message">
+          {{ registerError }}
+        </div>
         <input v-model="registerUsername" type="text" placeholder="Nombre" />
         <input v-model="registerEmail" type="email" placeholder="Email" />
         <input v-model="registerPassword" type="password" placeholder="Contraseña" style="margin-bottom: 20px;"/>
-        <button type="submit">Registrarse</button>
+        <button type="submit" :disabled="registerLoading">
+          {{ registerLoading ? 'Registrando...' : 'Registrarse' }}
+        </button>
       </form>
     </div>
     <div class="form-container sign-in-container">
       <form @submit.prevent="onLogin">
         <h1>Iniciar sesión</h1>
+        <div v-if="loginError" class="error-message">
+          {{ loginError }}
+        </div>
         <input v-model="loginField" type="text" placeholder="Nombre de usuario" />
         <input v-model="loginPassword" type="password" placeholder="Contraseña" style="margin-bottom: 20px;" />
         <!-- <a href="#">¿Olvidó su contraseña?</a> -->
-        <button type="submit">Iniciar sesión</button>
+        <button type="submit" :disabled="loginLoading">
+          {{ loginLoading ? 'Iniciando...' : 'Iniciar sesión' }}
+        </button>
       </form>
     </div>
     <div class="overlay-container">
@@ -46,10 +56,14 @@ const rightPanelActive = ref(false);
 
 const loginField = ref('');
 const loginPassword = ref('');
+const loginError = ref('');
+const loginLoading = ref(false);
 
 const registerEmail = ref('');
 const registerUsername = ref('');
 const registerPassword = ref('');
+const registerError = ref('');
+const registerLoading = ref(false);
 
 const authStore = useAuthStore();
 
@@ -61,19 +75,56 @@ function showSignIn() {
 }
 
 async function onLogin() {
+  loginError.value = '';
+  loginLoading.value = true;
+
   try {
     await authStore.login(loginField.value, loginPassword.value);
   } catch (err) {
     console.error(err);
+    
+    const errorString = String(err);
+    
+    if (errorString === 'Unauthorized' || errorString.includes('401')) {
+      loginError.value = 'Contraseña incorrecta';
+    } else if (errorString === 'Not Found' || errorString.includes('404')) {
+      loginError.value = 'Usuario no encontrado';
+    } else if (errorString.includes('500') || errorString.includes('Internal Server Error')) {
+      loginError.value = 'Error interno del servidor. Inténtelo más tarde.';
+    } else if (errorString.includes('network') || errorString.includes('Network')) {
+      loginError.value = 'Error de red. Verifica tu conexión';
+    } else {
+      loginError.value = 'Error de autenticación. Verifica tus credenciales.';
+    }
+  } finally {
+    loginLoading.value = false;
   }
 }
 
 async function onRegister() {
+  registerError.value = '';
+  registerLoading.value = true;
+
   try {
     await authStore.register(registerEmail.value, registerUsername.value, registerPassword.value, registerPassword.value);
     rightPanelActive.value = false;
   } catch (err) {
     console.error(err);
+    
+    const errorString = String(err);
+    console.log('Error de registro:', errorString);
+    
+    if (errorString.includes('409') || errorString.includes('Conflict')) {
+      registerError.value = 'El usuario o email ya existe';
+    } else if (errorString.includes('400') || errorString.includes('Bad Request')) {
+      registerError.value = 'Datos inválidos. Verifica la información';
+    } else if (errorString.includes('500') || errorString.includes('Internal Server Error')) {
+      registerError.value = 'Error del servidor. Inténtalo más tarde';
+    } else {
+      registerError.value = 'Error en el registro. Verifica los datos.';
+    }
+  } finally {
+    registerLoading.value = false;
   }
 }
 </script>
@@ -308,6 +359,28 @@ input {
   margin: 0 5px;
   height: 40px;
   width: 40px;
+}
+
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin: 8px 0;
+  font-size: 14px;
+  width: 100%;
+  text-align: center;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+button:disabled:active {
+  transform: none;
 }
 
 footer {
