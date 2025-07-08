@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import { SettingsIcon, LogoutIcon, UserIcon } from 'vue-tabler-icons';
 import { useAuthStore } from '@/stores/auth';
+import { useRouter } from 'vue-router';
 
 const authStore = useAuthStore();
+const router = useRouter();
+
+function goToProfile() {
+  router.push('/profile');
+}
+
 </script>
 
 <template>
@@ -16,30 +23,44 @@ const authStore = useAuthStore();
       <v-divider></v-divider>
 
       <v-list class="mt-3">
-        <v-list-item color="secondary" rounded="md">
+        <v-list-item color="primary" rounded="md">
           <template v-slot:prepend>
             <SettingsIcon size="20" class="mr-2" />
           </template>
-
           <v-list-item-title class="text-subtitle-2"> Ajustes </v-list-item-title>
         </v-list-item>
 
-        <v-list-item color="secondary" rounded="md">
+        <v-list-item @click="goToProfile" rounded="md" class="clickable-item" :ripple="false">
           <template v-slot:prepend>
             <UserIcon size="20" class="mr-2" />
           </template>
-
-          <v-list-item-title class="text-subtitle-2"> Gestión de usuarios </v-list-item-title>
+          <v-list-item-title class="text-subtitle-2"> Mi perfil </v-list-item-title>
         </v-list-item>
 
-        <v-list-item @click="authStore.logout()" color="secondary" rounded="md">
+        <v-list-item @click="authStore.logout()" rounded="md" class="clickable-item" :ripple="false">
           <template v-slot:prepend>
             <LogoutIcon size="20" class="mr-2" />
           </template>
-
           <v-list-item-title class="text-subtitle-2"> Cerrar sesión</v-list-item-title>
         </v-list-item>
       </v-list>
     </perfect-scrollbar>
   </div>
 </template>
+
+<style scoped>
+.clickable-item {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.clickable-item:hover {
+  background-color: rgba(28, 188, 148, 0.08) !important;
+}
+
+.clickable-item:active {
+  background-color: rgba(28, 188, 148, 0.2) !important;
+  transform: scale(0.98);
+}
+
+</style>
