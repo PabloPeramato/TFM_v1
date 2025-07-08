@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import DeviceCard from './components/DeviceCard.vue';
+import DeviceCard from '../components/DeviceCard.vue';
 import { formatDeviceName } from '@/utils/helpers/format';
 
 const availableDevices = ref<string[]>([]);

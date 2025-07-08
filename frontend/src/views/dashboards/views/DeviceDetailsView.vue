@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, shallowRef } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import axios from 'axios';
 import { fillDeviceFormFields } from '@/utils/helpers/fillDeviceFormFields';
@@ -9,6 +9,7 @@ import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
 import UiParentCard from '@/components/shared/UiParentCard.vue';
 
 const route = useRoute();
+const router = useRouter();
 const serial = route.params.serial as string;
 const authStore = useAuthStore();
 
@@ -27,6 +28,10 @@ const piIndex = ref<number | null>(null);
 const formUser = ref(authStore.user?.username || '');
 const formOs = ref('');
 const formSerial = ref('');
+
+function handleCancel() {
+  router.back();
+}
 
 onMounted(() => {
   axios
@@ -86,7 +91,7 @@ onMounted(() => {
         <div class="d-flex ga-4 mb-6">
           <v-btn size="small" variant="flat" color="grey">Mounted</v-btn>
           <v-btn size="small" variant="flat" color="grey">Dismounted</v-btn>
-          <v-btn size="small" variant="flat" color="success">Create New Image</v-btn>
+          <v-btn size="small" variant="flat" color="#1CBC94">Create New Image</v-btn>
           <v-btn size="small" variant="flat" color="error">Delete</v-btn>
         </div>
 
@@ -99,8 +104,8 @@ onMounted(() => {
         <v-text-field v-model="formSerial" label="Serial number" variant="outlined" density="compact" />
 
         <div class="d-flex justify-end mt-4 ga-4">
-          <v-btn color="success" variant="flat" size="small">Create</v-btn>
-          <v-btn color="grey" variant="flat" size="small">Cancel</v-btn>
+          <v-btn color="#1CBC94" variant="flat" size="small">Create</v-btn>
+          <v-btn color="grey" variant="flat" size="small" @click="handleCancel">Cancel</v-btn>
         </div>
       </UiParentCard>
     </v-col>

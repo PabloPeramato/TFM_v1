@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
-import { useAuthStore } from '../../stores/auth';
+import { useAuthStore } from '../../../stores/auth';
 import { formatDeviceName } from '@/utils/helpers/format';
-import MyDeviceCard from './components/MyDeviceCard.vue';
+import MyDeviceCard from '../components/MyDeviceCard.vue';
 
 const authStore = useAuthStore();
 const username = authStore.user?.username ?? '';

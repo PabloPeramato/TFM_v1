@@ -37,7 +37,10 @@ const props = defineProps({
 
 const goToDetails = () => {
   if (props.serial?.trim()) {
-    router.push(`/main/my-devices/${props.serial}`);
+    router.push({
+      name: 'MyDeviceDetails',
+      params: { serial: props.serial }
+    });
   }
 };
 
