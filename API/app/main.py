@@ -30,7 +30,7 @@ app = FastAPI(
     redoc_url=None
 )
 
-# Middleware CORS 
+# Middleware CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ORIGINS,
