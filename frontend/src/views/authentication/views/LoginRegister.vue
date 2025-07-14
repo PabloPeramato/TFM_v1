@@ -1,59 +1,69 @@
 <template>
-  <div class="container" :class="{'right-panel-active': rightPanelActive}">
-    <div class="form-container sign-up-container">
-      <form @submit.prevent="onRegister">
-        <h1>Crear cuenta</h1>
-        <div v-if="registerError" class="error-message">
-          {{ registerError }}
-        </div>
-        <input v-model="registerUsername" type="text" placeholder="Nombre" />
-        <input v-model="registerEmail" type="email" placeholder="Email" />
-        <input v-model="registerPassword" type="password" placeholder="Contraseña" style="margin-bottom: 20px;"/>
-        <input v-model="registerConfirmPassword" type="password" placeholder="Confirmar Contraseña" style="margin-bottom: 20px;"/>
-        <button type="submit" :disabled="registerLoading">
-          {{ registerLoading ? 'Registrando...' : 'Registrarse' }}
-        </button>
-      </form>
-    </div>
-    <div class="form-container sign-in-container">
-      <form @submit.prevent="onLogin">
-        <h1>Iniciar sesión</h1>
-        <div v-if="loginError" class="error-message">
-          {{ loginError }}
-        </div>
-        <input v-model="loginField" type="text" placeholder="Nombre de usuario" />
-        <input v-model="loginPassword" type="password" placeholder="Contraseña" style="margin-bottom: 20px;" />
-        <!-- <a href="#">¿Olvidó su contraseña?</a> -->
-        <button type="submit" :disabled="loginLoading">
-          {{ loginLoading ? 'Iniciando...' : 'Iniciar sesión' }}
-        </button>
-      </form>
-    </div>
-    <div class="overlay-container">
-      <div class="overlay">
-        <div class="overlay-panel overlay-left">
-          <h1>¡Bienvenido de nuevo!</h1>
-          <p>Para mantenerse conectado con nosotros inicie sesión con sus detalles personales</p>
-          <button class="ghost" @click="showSignIn">Iniciar sesión</button>
-        </div>
-        <div class="overlay-panel overlay-right">
-          <h1>¿Nueva cuenta?</h1>
-          <p>Introduza sus detalles personales para comenzar la aventura con nosotros</p>
-          <button class="ghost" @click="showSignUp">Registrarse</button>
+  <div class="login-wrapper" :class="themeClass">
+    <div class="container" :class="{'right-panel-active': rightPanelActive}">
+      <div class="form-container sign-up-container">
+        <form @submit.prevent="onRegister">
+          <h1>Crear cuenta</h1>
+          <div v-if="registerError" class="error-message">
+            {{ registerError }}
+          </div>
+          <input v-model="registerUsername" type="text" placeholder="Nombre" />
+          <input v-model="registerEmail" type="email" placeholder="Email" />
+          <input v-model="registerPassword" type="password" placeholder="Contraseña" style="margin-bottom: 20px;"/>
+          <input v-model="registerConfirmPassword" type="password" placeholder="Confirmar Contraseña" style="margin-bottom: 20px;"/>
+          <button type="submit" :disabled="registerLoading">
+            {{ registerLoading ? 'Registrando...' : 'Registrarse' }}
+          </button>
+        </form>
+      </div>
+      <div class="form-container sign-in-container">
+        <form @submit.prevent="onLogin">
+          <h1>Iniciar sesión</h1>
+          <div v-if="loginError" class="error-message">
+            {{ loginError }}
+          </div>
+          <input v-model="loginField" type="text" placeholder="Nombre de usuario" />
+          <input v-model="loginPassword" type="password" placeholder="Contraseña" style="margin-bottom: 20px;" />
+          <!-- <a href="#">¿Olvidó su contraseña?</a> -->
+          <button type="submit" :disabled="loginLoading">
+            {{ loginLoading ? 'Iniciando...' : 'Iniciar sesión' }}
+          </button>
+        </form>
+      </div>
+      <div class="overlay-container">
+        <div class="overlay">
+          <div class="overlay-panel overlay-left">
+            <h1>¡Bienvenido de nuevo!</h1>
+            <p>Para mantenerse conectado con nosotros inicie sesión con sus detalles personales</p>
+            <button class="ghost" @click="showSignIn">Iniciar sesión</button>
+          </div>
+          <div class="overlay-panel overlay-right">
+            <h1>¿Nueva cuenta?</h1>
+            <p>Introduza sus detalles personales para comenzar la aventura con nosotros</p>
+            <button class="ghost" @click="showSignUp">Registrarse</button>
+          </div>
         </div>
       </div>
     </div>
+    <footer>
+      <p>Pablo Peramato Benito &copy; 2025</p>
+    </footer>
   </div>
-  <footer>
-    <p>Pablo Peramato Benito &copy; 2025</p>
-  </footer>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
+import { useTheme } from 'vuetify';
 
 const rightPanelActive = ref(false);
+const theme = useTheme();
+
+// Computed property mejorado para detectar el tema
+const themeClass = computed(() => {
+  const isDark = theme.global.current.value.dark;
+  return isDark ? 'theme-dark' : 'theme-light';
+});
 
 const loginField = ref('');
 const loginPassword = ref('');
@@ -133,28 +143,72 @@ async function onRegister() {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+
+/* Wrapper principal que controla todo el tema */
+.login-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+}
+
+/* Tema claro (por defecto) */
+.theme-light {
+  --login-bg-primary: #1CBC94;
+  --login-bg-secondary: #16A085;
+  --login-surface: #ffffff;
+  --login-text-primary: #212121;
+  --login-text-secondary: #616161;
+  --login-input-bg: #eeeeee;
+  --login-border: #d0d0d0;
+  --login-container-bg: #f6f5f7;
+  --login-footer-bg: #222222;
+  --login-error-bg: #f8d7da;
+  --login-error-text: #721c24;
+  --login-error-border: #f5c6cb;
+  
+  background: #f6f5f7;
+}
+
+/* Tema oscuro */
+.theme-dark {
+  --login-bg-primary: #1CBC94;
+  --login-bg-secondary: #16A085;
+  --login-surface: #2a2a2a;
+  --login-text-primary: #ffffff;
+  --login-text-secondary: #b0b0b0;
+  --login-input-bg: #404040;
+  --login-border: #606060;
+  --login-container-bg: #1a1a1a;
+  --login-footer-bg: #1a1a1a;
+  --login-error-bg: #3f1a1a;
+  --login-error-text: #ffffff;
+  --login-error-border: #606060;
+  
+  background: #1a1a1a;
+}
+
 * {
   box-sizing: border-box;
 }
 
-body {
-  background: #f6f5f7;
+.login-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   font-family: 'Montserrat', sans-serif;
-  height: 100vh;
   margin: -20px 0 50px;
 }
 
 h1 {
   font-weight: bold;
   margin: 0;
+  color: var(--login-text-primary);
 }
 
 h2 {
   text-align: center;
+  color: var(--login-text-primary);
 }
 
 p {
@@ -163,14 +217,16 @@ p {
   line-height: 20px;
   letter-spacing: 0.5px;
   margin: 20px 0 30px;
+  color: var(--login-text-secondary);
 }
 
 span {
   font-size: 12px;
+  color: var(--login-text-secondary);
 }
 
 a {
-  color: #333;
+  color: var(--login-text-primary);
   font-size: 14px;
   text-decoration: none;
   margin: 15px 0;
@@ -178,8 +234,8 @@ a {
 
 button {
   border-radius: 20px;
-  border: 1px solid #1CBC94;
-  background-color: #1CBC94;
+  border: 1px solid var(--login-bg-primary);
+  background-color: var(--login-bg-primary);
   color: #FFFFFF;
   font-size: 12px;
   font-weight: bold;
@@ -203,7 +259,7 @@ button.ghost {
 }
 
 form {
-  background-color: #FFFFFF;
+  background-color: var(--login-surface);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -214,15 +270,21 @@ form {
 }
 
 input {
-  background-color: #eee;
+  background-color: var(--login-input-bg);
   border: none;
   padding: 12px 15px;
   margin: 8px 0;
   width: 100%;
+  color: var(--login-text-primary);
+  border-radius: 4px;
+}
+
+input::placeholder {
+  color: var(--login-text-secondary);
 }
 
 .container {
-  background-color: #fff;
+  background-color: var(--login-surface);
   border-radius: 10px;
   box-shadow: 0 14px 28px rgba(0,0,0,0.25),
       0 10px 10px rgba(0,0,0,0.22);
@@ -297,9 +359,9 @@ input {
 }
 
 .overlay {
-  background: #1CBC94;
-  background: -webkit-linear-gradient(to right, #1CBC94, #16A085);
-  background: linear-gradient(to right, #1CBC94, #16A085);
+  background: var(--login-bg-primary);
+  background: -webkit-linear-gradient(to right, var(--login-bg-primary), var(--login-bg-secondary));
+  background: linear-gradient(to right, var(--login-bg-primary), var(--login-bg-secondary));
   background-repeat: no-repeat;
   background-size: cover;
   background-position: 0 0;
@@ -331,6 +393,12 @@ input {
   transition: transform 0.6s ease-in-out;
 }
 
+/* Texto del overlay siempre blanco para mejor contraste sobre fondo verde */
+.overlay-panel p,
+.overlay-panel h1 {
+  color: #ffffff !important;
+}
+
 .overlay-left {
   transform: translateX(-20%);
 }
@@ -353,7 +421,7 @@ input {
 }
 
 .social-container a {
-  border: 1px solid #DDDDDD;
+  border: 1px solid var(--login-border);
   border-radius: 50%;
   display: inline-flex;
   justify-content: center;
@@ -364,9 +432,9 @@ input {
 }
 
 .error-message {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
+  background-color: var(--login-error-bg);
+  color: var(--login-error-text);
+  border: 1px solid var(--login-error-border);
   border-radius: 4px;
   padding: 8px 12px;
   margin: 8px 0;
@@ -386,7 +454,7 @@ button:disabled:active {
 }
 
 footer {
-  background-color: #222;
+  background-color: var(--login-footer-bg);
   color: #fff;
   font-size: 14px;
   bottom: 0;
