@@ -9,6 +9,7 @@
         <input v-model="registerUsername" type="text" placeholder="Nombre" />
         <input v-model="registerEmail" type="email" placeholder="Email" />
         <input v-model="registerPassword" type="password" placeholder="Contraseña" style="margin-bottom: 20px;"/>
+        <input v-model="registerConfirmPassword" type="password" placeholder="Confirmar Contraseña" style="margin-bottom: 20px;"/>
         <button type="submit" :disabled="registerLoading">
           {{ registerLoading ? 'Registrando...' : 'Registrarse' }}
         </button>
@@ -62,6 +63,7 @@ const loginLoading = ref(false);
 const registerEmail = ref('');
 const registerUsername = ref('');
 const registerPassword = ref('');
+const registerConfirmPassword = ref('');
 const registerError = ref('');
 const registerLoading = ref(false);
 
@@ -106,7 +108,7 @@ async function onRegister() {
   registerLoading.value = true;
 
   try {
-    await authStore.register(registerEmail.value, registerUsername.value, registerPassword.value, registerPassword.value);
+    await authStore.register(registerEmail.value, registerUsername.value, registerPassword.value, registerConfirmPassword.value);
     rightPanelActive.value = false;
   } catch (err) {
     console.error(err);
