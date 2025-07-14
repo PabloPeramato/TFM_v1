@@ -78,7 +78,12 @@ onMounted(async () => {
         </v-col>
 
         <v-col v-for="(device, index) in myDevices" :key="device.serial" cols="12" md="4">
-            <MyDeviceCard :name="formatDeviceName(device.serial)" :serial="device.serial" :mounted="true" />
+            <MyDeviceCard 
+                :name="formatDeviceName(device.serial)" 
+                :serial="device.serial" 
+                :os="device.os"
+                :mounted="true" 
+            />
         </v-col>
 
         <v-col v-if="myDevices.length === 0" cols="12">

@@ -313,8 +313,16 @@ async function handleDelete() {
         </div>
 
         <v-text-field v-model="formUser" label="User" variant="outlined" density="compact" readonly/>
-        <v-text-field v-model="formOs" label="Operating system and Raspberry Pi model" variant="outlined"
-          density="compact" />
+        <v-select
+          v-model="formOs"
+          :items="['dietpi', 'raspbian']"
+          label="Operating system and Raspberry Pi model"
+          placeholder="Selecciona el sistema operativo"
+          variant="outlined"
+          density="compact"
+          clearable
+          persistent-placeholder
+        />
         <v-text-field v-model="formSerial" label="Serial number" variant="outlined" density="compact" readonly/>
 
         <div class="d-flex justify-end mt-4 ga-4">
