@@ -58,7 +58,7 @@ export const useUserStore = defineStore({
         serial: serial
       }).toString();
       console.log('🔄 Eliminando imagen:', params);
-      const response = await fetchWrapper.post(`${url}?${params}`);
+      const response = await fetchWrapper.delete(`${url}?${params}`);
       return response;
     },
   }

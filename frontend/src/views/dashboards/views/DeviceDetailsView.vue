@@ -31,6 +31,10 @@ const formUser = ref(authStore.user?.username || '');
 const formOs = ref('');
 const formSerial = ref('');
 const formError = ref('');
+const mountingLoading = ref(false);
+const dismountingLoading = ref(false);
+const newImageLoading = ref(false);
+const deleteLoading = ref(false);
 
 function handleCancel() {
   router.back();
@@ -67,7 +71,8 @@ onMounted(() => {
 });
 
 async function handleCreateImage() {
-  router.back();
+  formError.value = '';
+  newImageLoading.value = true;
   try {
     
     console.log('Creating image with:', {
@@ -78,29 +83,37 @@ async function handleCreateImage() {
     const response = await userStore.newImage(formUser.value, formOs.value, formSerial.value);
     console.log('✅ Imagen creada correctamente:', response);
     // Mostrar notificación o redirigir
-  } catch (err) {
-    console.error(err);
+  } catch (err: any) {
     
-    const errorString = String(err);
+    const statusCode = err.response?.status;
+    const backendDetail = err.response?.data?.detail || '';
     
-    if (errorString === 'Invalid argument' || errorString.includes('400')) {
+    if (statusCode === 400) {
+      console.error('Invalid argument error:', backendDetail);
       formError.value = 'Sistema operativo no válido';
-    } else if (errorString === 'Invalid serial' || errorString.includes('401')) {
+    } else if (statusCode === 401) {
+      console.error('Unauthorized error:', backendDetail);
       formError.value = 'Serial no válido';
-    } else if (errorString === 'Unmount' || errorString.includes('402')) {
+    } else if (statusCode === 402) {
+      console.error('Payment Required error:', backendDetail);
       formError.value = 'Desmonte primero el dispositivo';
-    } else if (errorString.includes('500') || errorString.includes('Internal Server Error')) {
+    } else if (statusCode === 500) {
+      console.error('Internal Server Error:', backendDetail);
       formError.value = 'Error interno del servidor. Inténtelo más tarde.';
-    } else if (errorString.includes('network') || errorString.includes('Network')) {
+    } else if (err.message.toLowerCase().includes('network')) {
       formError.value = 'Error de red. Verifica tu conexión';
     } else {
+      console.error('Other error:', backendDetail);
       formError.value = 'Error de autenticación. Verifica tus credenciales.';
     }
+  } finally {
+    newImageLoading.value = false;
   }
 }
 
 async function handleMounted() {
-  router.back();
+  formError.value = '';
+  mountingLoading.value = true;
   try {
     
     console.log('Mounting image with:', {
@@ -111,29 +124,46 @@ async function handleMounted() {
     const response = await userStore.mounted(formUser.value, formOs.value, formSerial.value);
     console.log('✅ Imagen montada correctamente:', response);
     // Mostrar notificación o redirigir
-  } catch (err) {
-    console.error(err);
+  } catch (err: any) {
+
+    const statusCode = err.response?.status;
+    const backendDetail = err.response?.data?.detail || '';
     
-    const errorString = String(err);
-    
-    if (errorString === 'Invalid argument' || errorString.includes('400')) {
+    if (statusCode === 400) {
+      console.error('Invalid argument error:', backendDetail);
       formError.value = 'Sistema operativo no válido';
-    } else if (errorString === 'Invalid serial' || errorString.includes('401')) {
+    } else if (statusCode === 401) {
+      console.error('Unauthorized error:', backendDetail);
       formError.value = 'Serial no válido';
-    } else if (errorString === 'Unmount' || errorString.includes('402')) {
+    } else if (statusCode === 402) {
+      console.error('Payment Required error:', backendDetail);
       formError.value = 'Desmonte primero el dispositivo';
-    } else if (errorString.includes('500') || errorString.includes('Internal Server Error')) {
+    } else if (statusCode === 407) {
+      console.error('Proxy Authentication Required error:', backendDetail);
+      formError.value = 'No hay sesiones para el usuario.';
+    } else if (statusCode === 408) {
+      console.error('Request Timeout error:', backendDetail);
+      formError.value = 'No hay sesiones para este SO';
+    } else if (statusCode === 409) {
+      console.error('Conflict error:', backendDetail);
+      formError.value = 'No hay sesión para este dispositivo';
+    } else if (statusCode === 500) {
+      console.error('Internal Server Error:', backendDetail);
       formError.value = 'Error interno del servidor. Inténtelo más tarde.';
-    } else if (errorString.includes('network') || errorString.includes('Network')) {
+    } else if (err.message.toLowerCase().includes('network')) {
       formError.value = 'Error de red. Verifica tu conexión';
     } else {
+      console.error('Other error:', backendDetail);
       formError.value = 'Error de autenticación. Verifica tus credenciales.';
     }
+  } finally {
+    mountingLoading.value = false;
   }
 }
 
 async function handleDisMounted() {
-  router.back();
+  formError.value = '';
+  dismountingLoading.value = true;
   try {
     
     console.log('Dismounting image with:', {
@@ -144,29 +174,49 @@ async function handleDisMounted() {
     const response = await userStore.dismounted(formUser.value, formOs.value, formSerial.value);
     console.log('✅ Imagen desmontada correctamente:', response);
     // Mostrar notificación o redirigir
-  } catch (err) {
-    console.error(err);
-    
-    const errorString = String(err);
-    
-    if (errorString === 'Invalid argument' || errorString.includes('400')) {
+  } catch (err: any) {
+
+    const statusCode = err.response?.status;
+    const backendDetail = err.response?.data?.detail || '';
+
+    if (statusCode === 400) {
+      console.error('Invalid argument error:', backendDetail);
       formError.value = 'Sistema operativo no válido';
-    } else if (errorString === 'Invalid serial' || errorString.includes('401')) {
+    } else if (statusCode === 401) {
+      console.error('Unauthorized error:', backendDetail);
       formError.value = 'Serial no válido';
-    } else if (errorString === 'PowerOFF' || errorString.includes('403')) {
+    } else if (statusCode === 403) {
+      console.error('Forbidden error:', backendDetail);
       formError.value = 'Apague primero el dispositivo';
-    } else if (errorString.includes('500') || errorString.includes('Internal Server Error')) {
+    } else if (statusCode === 405) {
+      console.error('Method Not Allowed error:', backendDetail);
+      formError.value = 'Raspberry Pi no montada';
+    } else if (statusCode === 407) {
+      console.error('Proxy Authentication Required error:', backendDetail);
+      formError.value = 'No hay sesiones para el usuario.';
+    } else if (statusCode === 408) {
+      console.error('Request Timeout error:', backendDetail);
+      formError.value = 'No hay sesiones para este SO';
+    } else if (statusCode === 409) {
+      console.error('Conflict error:', backendDetail);
+      formError.value = 'No hay sesión para este dispositivo';
+    } else if (statusCode === 500) {
+      console.error('Internal Server Error:', backendDetail);
       formError.value = 'Error interno del servidor. Inténtelo más tarde.';
-    } else if (errorString.includes('network') || errorString.includes('Network')) {
+    } else if (err.message.toLowerCase().includes('network')) {
       formError.value = 'Error de red. Verifica tu conexión';
     } else {
+      console.error('Other error:', backendDetail);
       formError.value = 'Error de autenticación. Verifica tus credenciales.';
     }
+  } finally {
+    dismountingLoading.value = false;
   }
 }
 
 async function handleDelete() {
-  router.back();
+  formError.value = '';
+  deleteLoading.value = true;
   try {
     
     console.log('Deleting image with:', {
@@ -177,26 +227,42 @@ async function handleDelete() {
     const response = await userStore.delete(formUser.value, formOs.value, formSerial.value);
     console.log('✅ Imagen eliminada correctamente:', response);
     // Mostrar notificación o redirigir
-  } catch (err) {
-    console.error(err);
-    
-    const errorString = String(err);
-    
-    if (errorString === 'Invalid argument' || errorString.includes('400')) {
+  } catch (err: any) {
+    const statusCode = err.response?.status;
+    const backendDetail = err.response?.data?.detail || '';
+
+    if (statusCode === 400) {
+      console.error('Invalid argument error:', backendDetail);
       formError.value = 'Sistema operativo no válido';
-    } else if (errorString === 'Invalid serial' || errorString.includes('401')) {
+    } else if (statusCode === 401) {
+      console.error('Unauthorized error:', backendDetail);
       formError.value = 'Serial no válido';
-    } else if (errorString === 'Unmount' || errorString.includes('402')) {
+    } else if (statusCode === 402) {
+      console.error('Unmount first error:', backendDetail);
       formError.value = 'Desmonte primero el dispositivo';
-    } else if (errorString === 'Not found' || errorString.includes('405')) {
+    } else if (statusCode === 406) {
+      console.error('Not found error:', backendDetail);
       formError.value = 'Sistema operativo no registrado en la sesión';
-    } else if (errorString.includes('500') || errorString.includes('Internal Server Error')) {
+    } else if (statusCode === 407) {
+      console.error('No session for user:', backendDetail);
+      formError.value = 'No hay sesiones para el usuario.';
+    } else if (statusCode === 408) {
+      console.error('No session for OS:', backendDetail);
+      formError.value = 'No hay sesiones para este SO';
+    } else if (statusCode === 409) {
+      console.error('No session for OS and serial:', backendDetail);
+      formError.value = 'No hay sesión para este dispositivo';
+    } else if (statusCode === 500) {
+      console.error('Internal Server Error:', backendDetail);
       formError.value = 'Error interno del servidor. Inténtelo más tarde.';
-    } else if (errorString.includes('network') || errorString.includes('Network')) {
+    } else if (err.message.toLowerCase().includes('network')) {
       formError.value = 'Error de red. Verifica tu conexión';
     } else {
+      console.error('Other error:', backendDetail);
       formError.value = 'Error de autenticación. Verifica tus credenciales.';
     }
+  } finally {
+    deleteLoading.value = false;
   }
 }
 </script>
@@ -226,19 +292,30 @@ async function handleDelete() {
 
         <div class="mb-2 font-weight-medium">Device options</div>
         <div class="d-flex ga-4 mb-6">
-          <v-btn size="small" variant="flat" color="grey" @click="handleMounted">Mounted</v-btn>
-          <v-btn size="small" variant="flat" color="grey" @click="handleDisMounted">Dismounted</v-btn>
-          <v-btn size="small" variant="flat" color="#1CBC94" @click="handleCreateImage">Create New Image</v-btn>
-          <v-btn size="small" variant="flat" color="error" @clicl="handleDelete">Delete</v-btn>
+          <v-btn size="small" variant="flat" color="grey" @click="handleMounted" :disabled="mountingLoading">
+            {{ mountingLoading ? 'Mounting...' : 'Mount' }}
+          </v-btn>
+          <v-btn size="small" variant="flat" color="grey" @click="handleDisMounted" :disabled="dismountingLoading">
+            {{ dismountingLoading ? 'Dismounting...' : 'Dismount' }}
+          </v-btn>
+          <v-btn size="small" variant="flat" color="#1CBC94" @click="handleCreateImage" :disabled="newImageLoading">
+            {{ newImageLoading ? 'Creating New Image...' : 'Create New Image' }}
+          </v-btn>
+          <v-btn size="small" variant="flat" color="error" @click="handleDelete" :disabled="deleteLoading">
+            {{ deleteLoading ? 'Deleting...' : 'Delete' }}
+          </v-btn>
         </div>
 
-        <div class="mb-2 font-weight-medium">New image</div>
-        <div class="text-caption mb-4">Complete the form to create a new image of the device</div>
+        <!--div class="mb-2 font-weight-medium">New image</div-->
+        <div class="text-caption mb-4">Complete the form to manage the device</div>
+        <div v-if="formError" class="error-message">
+          {{ formError }}
+        </div>
 
-        <v-text-field v-model="formUser" label="User" variant="outlined" density="compact" />
+        <v-text-field v-model="formUser" label="User" variant="outlined" density="compact" readonly/>
         <v-text-field v-model="formOs" label="Operating system and Raspberry Pi model" variant="outlined"
           density="compact" />
-        <v-text-field v-model="formSerial" label="Serial number" variant="outlined" density="compact" />
+        <v-text-field v-model="formSerial" label="Serial number" variant="outlined" density="compact" readonly/>
 
         <div class="d-flex justify-end mt-4 ga-4">
           <!--v-btn color="#1CBC94" variant="flat" size="small">Create</v-btn-->
@@ -248,3 +325,17 @@ async function handleDelete() {
     </v-col>
   </v-row>
 </template>
+
+<style scoped>
+.error-message {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin: 8px 0;
+  font-size: 14px;
+  width: 100%;
+  text-align: center;
+}
+</style>
