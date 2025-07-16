@@ -33,6 +33,7 @@ const formUser = ref(authStore.user?.username || '');
 const formOs = ref('');
 const formSerial = ref('');
 const formError = ref('');
+const formSuccess = ref('');
 const mountingLoading = ref(false);
 const dismountingLoading = ref(false);
 const newImageLoading = ref(false);
@@ -77,6 +78,7 @@ onMounted(() => {
 
 async function handleCreateImage() {
   formError.value = '';
+  formSuccess.value = '';
   newImageLoading.value = true;
   try {
     console.log('Creating image with:', {
@@ -86,6 +88,7 @@ async function handleCreateImage() {
     });
     const response = await userStore.newImage(formUser.value, formOs.value, formSerial.value);
     console.log('✅ Imagen creada correctamente:', response);
+    formSuccess.value = 'Imagen creada correctamente';
     // Mostrar notificación o redirigir
   } catch (err: any) {
     const statusCode = err.response?.status;
@@ -116,6 +119,7 @@ async function handleCreateImage() {
 
 async function handleMounted() {
   formError.value = '';
+  formSuccess.value = '';
   mountingLoading.value = true;
   try {
     console.log('Mounting image with:', {
@@ -125,6 +129,7 @@ async function handleMounted() {
     });
     const response = await userStore.mounted(formUser.value, formOs.value, formSerial.value);
     console.log('✅ Imagen montada correctamente:', response);
+    formSuccess.value = 'Dispositivo montado correctamente';
     // Mostrar notificación o redirigir
   } catch (err: any) {
     const statusCode = err.response?.status;
@@ -164,6 +169,7 @@ async function handleMounted() {
 
 async function handleDisMounted() {
   formError.value = '';
+  formSuccess.value = '';
   dismountingLoading.value = true;
   try {
     console.log('Dismounting image with:', {
@@ -173,6 +179,7 @@ async function handleDisMounted() {
     });
     const response = await userStore.dismounted(formUser.value, formOs.value, formSerial.value);
     console.log('✅ Imagen desmontada correctamente:', response);
+    formSuccess.value = 'Dispositivo desmontado correctamente';
     // Mostrar notificación o redirigir
   } catch (err: any) {
     const statusCode = err.response?.status;
@@ -215,6 +222,7 @@ async function handleDisMounted() {
 
 async function handleDelete() {
   formError.value = '';
+  formSuccess.value = '';
   deleteLoading.value = true;
   try {
     console.log('Deleting image with:', {
@@ -224,6 +232,7 @@ async function handleDelete() {
     });
     const response = await userStore.delete(formUser.value, formOs.value, formSerial.value);
     console.log('✅ Imagen eliminada correctamente:', response);
+    formSuccess.value = 'Imagen eliminada correctamente';
     // Mostrar notificación o redirigir
   } catch (err: any) {
     const statusCode = err.response?.status;
@@ -311,8 +320,11 @@ async function handleDelete() {
         <div v-if="formError" class="error-message">
           {{ formError }}
         </div>
+        <div v-if="formSuccess" class="success-message">
+          {{ formSuccess }}
+        </div>
 
-        <v-text-field v-model="formUser" label="User" variant="outlined" density="compact" readonly />
+        <v-text-field v-model="formUser" label="User" variant="outlined" density="compact" />
         <v-select
           v-model="formOs"
           :items="['dietpi', 'raspbian']"
@@ -339,6 +351,17 @@ async function handleDelete() {
   background-color: #f8d7da;
   color: #721c24;
   border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin: 8px 0;
+  font-size: 14px;
+  width: 100%;
+  text-align: center;
+}
+.success-message {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
   border-radius: 4px;
   padding: 8px 12px;
   margin: 8px 0;

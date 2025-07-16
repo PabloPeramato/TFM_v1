@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SettingsIcon, LogoutIcon, UserIcon } from 'vue-tabler-icons';
+import { LogoutIcon, UserIcon } from 'vue-tabler-icons';
 import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
 
@@ -9,7 +9,6 @@ const router = useRouter();
 function goToProfile() {
   router.push('/profile');
 }
-
 </script>
 
 <template>
@@ -23,13 +22,6 @@ function goToProfile() {
       <v-divider></v-divider>
 
       <v-list class="mt-3">
-        <v-list-item color="primary" rounded="md">
-          <template v-slot:prepend>
-            <SettingsIcon size="20" class="mr-2" />
-          </template>
-          <v-list-item-title class="text-subtitle-2"> Ajustes </v-list-item-title>
-        </v-list-item>
-
         <v-list-item @click="goToProfile" rounded="md" class="clickable-item" :ripple="false">
           <template v-slot:prepend>
             <UserIcon size="20" class="mr-2" />
@@ -62,5 +54,4 @@ function goToProfile() {
   background-color: rgba(28, 188, 148, 0.2) !important;
   transform: scale(0.98);
 }
-
 </style>

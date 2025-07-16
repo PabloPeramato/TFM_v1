@@ -1,7 +1,5 @@
 import { defineStore } from 'pinia';
-import { router } from '@/router';
 import { fetchWrapper } from '@/utils/helpers/fetch-wrapper';
-import { jwtDecode } from 'jwt-decode';
 
 const apiUrl = import.meta.env.VITE_API_URL || '';
 const baseUrl = `${apiUrl}/sessions`;
@@ -60,6 +58,6 @@ export const useUserStore = defineStore({
       console.log('🔄 Eliminando imagen:', params);
       const response = await fetchWrapper.delete(`${url}?${params}`);
       return response;
-    },
+    }
   }
 });

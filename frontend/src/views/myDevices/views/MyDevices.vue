@@ -10,6 +10,7 @@ const authStore = useAuthStore();
 const username = authStore.user?.username ?? '';
 const unavailableDevices = ref<{ serial: string; os: string; user: string }[]>([]);
 const loading = ref(true);
+const powerStatus = ref<{ serial: string; os: string; power_status: string; ip: string }[]>([]);
 
 const myDevices = computed(() => {
   if (!Array.isArray(unavailableDevices.value)) return [];
@@ -18,17 +19,21 @@ const myDevices = computed(() => {
 
 onMounted(async () => {
   const token = localStorage.getItem('user');
-  if (!token) return;
+  if (!token) {
+    loading.value = false;
+    return;
+  }
+
   const parsed = JSON.parse(token);
   const decoded = JSON.parse(atob(parsed.token.split('.')[1]));
   const username = decoded.data.userName;
   const useMock = import.meta.env.VITE_USE_MOCK === 'true';
 
   try {
-    let res;
+    let flatDevices = [];
+
     if (useMock) {
-      // --------------- 🔁 Modo mock  --------------
-      res = {
+      const mockResponse = {
         data: {
           user: username,
           operating_systems: [
@@ -43,22 +48,8 @@ onMounted(async () => {
           ]
         }
       };
-      const flatDevices = res.data.operating_systems.flatMap((os) =>
-        os.serials
-          .filter((s) => s.trim() !== '')
-          .map((serial) => ({
-            os: os.name,
-            serial,
-            user: username
-          }))
-      );
-      unavailableDevices.value = flatDevices;
-    } else {
-      // --------------- LLAMADA A BACK  --------------
-      res = await axios.get(`${import.meta.env.VITE_API_URL}/users/metadata?user=${username}`);
 
-      const devices: { name: string; serials: string[] }[] = res.data.operating_systems || [];
-      const flatDevices = devices.flatMap((os) =>
+      flatDevices = mockResponse.data.operating_systems.flatMap((os) =>
         os.serials
           .filter((s) => s.trim() !== '')
           .map((serial) => ({
@@ -67,10 +58,44 @@ onMounted(async () => {
             user: username
           }))
       );
-      unavailableDevices.value = flatDevices;
+    } else {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/users/metadata`, {
+        params: { user: username }
+      });
+      console.log('Respuesta del endpoint /users/metadata:', res.data);
+
+      const devices = res.data.operating_systems || [];
+      flatDevices = devices.flatMap((os: { name: string; serials: string[] }) =>
+        os.serials
+          .filter((s) => s.trim() !== '')
+          .map((serial) => ({
+            os: os.name,
+            serial,
+            user: username
+          }))
+      );
+    }
+
+    if (flatDevices.length > 0) {
+      try {
+        const statusRes = await axios.get(`${import.meta.env.VITE_API_URL}/power/status`, {
+          params: { user: username }
+        });
+
+        console.log('Respuesta del endpoint /power/status:', statusRes.data);
+
+        powerStatus.value = statusRes.data.power_status;
+
+        const powerSerials = new Set(powerStatus.value.map((p) => p.serial));
+        unavailableDevices.value = flatDevices.filter((device) => powerSerials.has(device.serial));
+      } catch (err) {
+        console.warn('No se pudo obtener el estado de encendido:', err?.response?.data?.detail ?? err.message);
+        powerStatus.value = [];
+        unavailableDevices.value = [];
+      }
     }
   } catch (error) {
-    console.error('Error al obtener dispositivos del usuario:', error);
+    console.error(' Error general al cargar dispositivos del usuario:', error);
   } finally {
     loading.value = false;
   }
@@ -85,7 +110,14 @@ onMounted(async () => {
     </v-col>
 
     <v-col v-for="device in myDevices" :key="device.serial" cols="12" md="4">
-      <MyDeviceCard :name="formatDeviceName(device.serial)" :serial="device.serial" :os="device.os" :mounted="true" />
+      <MyDeviceCard
+        :name="formatDeviceName(device.serial)"
+        :serial="device.serial"
+        :os="device.os"
+        :mounted="true"
+        :power-info="powerStatus.find((p) => p.serial === device.serial)"
+        :username="username"
+      />
     </v-col>
 
     <v-col v-if="myDevices.length === 0" cols="12">
