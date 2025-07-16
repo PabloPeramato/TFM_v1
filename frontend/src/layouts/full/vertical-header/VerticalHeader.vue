@@ -2,9 +2,8 @@
 import { ref, computed } from 'vue';
 import { useTheme } from 'vuetify';
 import { useCustomizerStore } from '../../../stores/customizer';
-import { SettingsIcon, SearchIcon} from 'vue-tabler-icons';
+import { SettingsIcon } from 'vue-tabler-icons';
 import ProfileDD from './ProfileDD.vue';
-import Searchbar from './SearchBarPanel.vue';
 
 const customizer = useCustomizerStore();
 const theme = useTheme();
@@ -57,19 +56,10 @@ const toggleTheme = () => {
       size="small"
       @click="searchbox"
     >
-      <SearchIcon size="17" stroke-width="1.5" />
     </v-btn>
 
-    <v-sheet v-if="showSearch" class="search-sheet v-col-12">
-      <Searchbar :closesearch="searchbox" />
-    </v-sheet>
-
-    <v-sheet class="mx-3 v-col-3 v-col-xl-2 v-col-lg-4 d-none d-lg-block">
-      <Searchbar />
-    </v-sheet>
-
     <v-spacer />
-    
+
     <div class="theme-switch-container mr-4">
       <div class="custom-theme-switch" @click="toggleTheme">
         <div class="switch-track" :class="{ 'track-active': isDarkTheme }">
@@ -79,7 +69,7 @@ const toggleTheme = () => {
         </div>
       </div>
     </div>
-    
+
     <v-menu :close-on-content-click="false">
       <template v-slot:activator="{ props }">
         <v-btn class="profileBtn text-primary" color="lightprimary" variant="flat" rounded="pill" v-bind="props">
@@ -130,7 +120,7 @@ const toggleTheme = () => {
 }
 
 .moon-icon {
-  color: #1CBC94;
+  color: #1cbc94;
 }
 
 .switch-thumb {
@@ -141,7 +131,7 @@ const toggleTheme = () => {
   border-radius: 50%;
   left: 4px;
   top: 4px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease;
   z-index: 2;
 }
@@ -151,6 +141,6 @@ const toggleTheme = () => {
 }
 
 .switch-track.track-active {
-  background: #1CBC94;
+  background: #1cbc94;
 }
 </style>

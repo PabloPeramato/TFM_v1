@@ -74,7 +74,6 @@ async function handleCreateImage() {
   formError.value = '';
   newImageLoading.value = true;
   try {
-    
     console.log('Creating image with:', {
       user: formUser.value,
       os: formOs.value,
@@ -84,10 +83,9 @@ async function handleCreateImage() {
     console.log('✅ Imagen creada correctamente:', response);
     // Mostrar notificación o redirigir
   } catch (err: any) {
-    
     const statusCode = err.response?.status;
     const backendDetail = err.response?.data?.detail || '';
-    
+
     if (statusCode === 400) {
       console.error('Invalid argument error:', backendDetail);
       formError.value = 'Sistema operativo no válido';
@@ -115,7 +113,6 @@ async function handleMounted() {
   formError.value = '';
   mountingLoading.value = true;
   try {
-    
     console.log('Mounting image with:', {
       user: formUser.value,
       os: formOs.value,
@@ -125,10 +122,9 @@ async function handleMounted() {
     console.log('✅ Imagen montada correctamente:', response);
     // Mostrar notificación o redirigir
   } catch (err: any) {
-
     const statusCode = err.response?.status;
     const backendDetail = err.response?.data?.detail || '';
-    
+
     if (statusCode === 400) {
       console.error('Invalid argument error:', backendDetail);
       formError.value = 'Sistema operativo no válido';
@@ -165,7 +161,6 @@ async function handleDisMounted() {
   formError.value = '';
   dismountingLoading.value = true;
   try {
-    
     console.log('Dismounting image with:', {
       user: formUser.value,
       os: formOs.value,
@@ -175,7 +170,6 @@ async function handleDisMounted() {
     console.log('✅ Imagen desmontada correctamente:', response);
     // Mostrar notificación o redirigir
   } catch (err: any) {
-
     const statusCode = err.response?.status;
     const backendDetail = err.response?.data?.detail || '';
 
@@ -218,7 +212,6 @@ async function handleDelete() {
   formError.value = '';
   deleteLoading.value = true;
   try {
-    
     console.log('Deleting image with:', {
       user: formUser.value,
       os: formOs.value,
@@ -312,7 +305,7 @@ async function handleDelete() {
           {{ formError }}
         </div>
 
-        <v-text-field v-model="formUser" label="User" variant="outlined" density="compact" readonly/>
+        <v-text-field v-model="formUser" label="User" variant="outlined" density="compact" readonly />
         <v-select
           v-model="formOs"
           :items="['dietpi', 'raspbian']"
@@ -323,7 +316,7 @@ async function handleDelete() {
           clearable
           persistent-placeholder
         />
-        <v-text-field v-model="formSerial" label="Serial number" variant="outlined" density="compact" readonly/>
+        <v-text-field v-model="formSerial" label="Serial number" variant="outlined" density="compact" readonly />
 
         <div class="d-flex justify-end mt-4 ga-4">
           <!--v-btn color="#1CBC94" variant="flat" size="small">Create</v-btn-->
